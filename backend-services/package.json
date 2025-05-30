@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.20.0",
+    "@types/aws-lambda": "^8.10.149",
     "aws-sdk": "^2.1692.0"
   },
   "devDependencies": {
