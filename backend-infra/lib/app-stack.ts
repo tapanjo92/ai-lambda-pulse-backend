@@ -36,7 +36,13 @@ export class AppStack extends Stack {
       runtime: Runtime.NODEJS_20_X, // :contentReference[oaicite:1]{index=1}
       entry: entryFile,
       handler: 'handler',
-      projectRoot: projectRoot, // :contentReference[oaicite:2]{index=2}
+      projectRoot: projectRoot,
+      bundling: {
+    // Forces esbuild to include this package in the bundle
+    nodeModules: ['@aws-lambda-powertools/logger'],
+    // OR, if you want to treat it as external at runtime:
+    // externalModules: ['@aws-lambda-powertools/logger'],
+  }, // :contentReference[oaicite:2]{index=2}
     });
     transformLambda.grantInvoke(firehoseRole);
 
