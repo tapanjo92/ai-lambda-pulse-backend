@@ -1,33 +1,45 @@
-import { Logger } from '@aws-lambda-powertools/logger';
-import {
-  FirehoseTransformationEvent,
-  FirehoseTransformationEventRecord,
-  FirehoseTransformationResult,
-  FirehoseTransformationResultRecord,
-} from 'aws-lambda';
+import { handler } from './index';
+import { FirehoseTransformationEvent, FirehoseTransformationResultRecord } from 'aws-lambda';
 
-const logger = new Logger({ serviceName: 'FirehoseTransformer' });
+test('handler should process records correctly, converting data to uppercase', async () => {
+  // 1. Create a sample input that looks like what Firehose would send
+  const sampleEvent: FirehoseTransformationEvent = {
+    invocationId: 'invId123', // Just an example ID for the function call
+    deliveryStreamArn: 'arn:aws:kinesis:region:account-id:deliverystream/stream-name', // Example ARN
+    region: 'us-east-1', // Example region
+    records: [
+      {
+        recordId: 'record1', // ID for the first piece of data
+        approximateArrivalTimestamp: Date.now(),
+        data: Buffer.from('hello world').toString('base64'), // "hello world" encoded
+      },
+      {
+        recordId: 'record2', // ID for the second piece of data
+        approximateArrivalTimestamp: Date.now(),
+        data: Buffer.from('test data').toString('base64'), // "test data" encoded
+      },
+    ],
+  };
 
-export const handler = async (
-  event: FirehoseTransformationEvent
-): Promise<FirehoseTransformationResult> => {
-  logger.info(
-    `Processing ${event.records.length} records from region ${event.region}. Invocation ID: ${event.invocationId}`
-  );
+  // 2. Call the handler with our sample event
+  const result = await handler(sampleEvent);
 
-  const output: FirehoseTransformationResultRecord[] = event.records.map(
-    (record: FirehoseTransformationEventRecord): FirehoseTransformationResultRecord => {
-      // logger.debug(`Processing recordId: ${record.recordId}`); // Optional: log individual records
-      const payload = Buffer.from(record.data, 'base64').toString('utf-8');
-      // logger.debug('Decoded payload snippet:', payload.substring(0, 100)); // Log a snippet
+  // 3. Check if the output is what we expect
 
-      return {
-        recordId: record.recordId,
-        result: 'Ok',
-        data: Buffer.from(payload.toUpperCase(), 'utf-8').toString('base64'),
-      };
-    }
-  );
-  return { records: output };
-};
-// Ensure no trailing blank lines below this line
+  // It should have the same number of records as the input
+  expect(result.records.length).toBe(2);
+
+  // Check the first record
+  const record1Result = result.records.find(r => r.recordId === 'record1');
+  expect(record1Result).toBeDefined(); // Make sure we found it
+  expect(record1Result?.result).toBe('Ok'); // The handler should mark it as 'Ok'
+  // The data should be "HELLO WORLD" (uppercase of "hello world"), then base64 encoded
+  expect(record1Result?.data).toBe(Buffer.from('HELLO WORLD').toString('base64'));
+
+  // Check the second record
+  const record2Result = result.records.find(r => r.recordId === 'record2');
+  expect(record2Result).toBeDefined();
+  expect(record2Result?.result).toBe('Ok');
+  // The data should be "TEST DATA" (uppercase of "test data"), then base64 encoded
+  expect(record2Result?.data).toBe(Buffer.from('TEST DATA').toString('base64'));
+});
