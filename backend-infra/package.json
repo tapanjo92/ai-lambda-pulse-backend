@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "jest --passWithNoTests --coverage",
     "cdk": "cdk",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write ."
