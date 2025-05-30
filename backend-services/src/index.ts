@@ -1,7 +1,6 @@
 import {
   FirehoseTransformationEvent,
-  FirehoseTransformationEventRecord,
-  FirehoseTransformationResult,
+  FirehoseTransformationResultRecord,
 } from 'aws-lambda';
 
 test('handler should process records correctly, converting data to uppercase', async () => {
