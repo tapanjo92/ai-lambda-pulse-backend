@@ -8,4 +8,3 @@ export class AppStack extends Stack {
     // ← later: add resources here
   }
 }
-

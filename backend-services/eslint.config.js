@@ -1,24 +1,27 @@
-import { defineConfig } from "eslint/config";
-import tsParser from "@typescript-eslint/parser";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
+import { defineConfig } from 'eslint/config';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettierPlugin from 'eslint-plugin-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier/flat';
 
 export default defineConfig([
   {
-    // Apply to all TS files
-    files: ["**/*.ts"],
-
-    // Use the TS parser & project settings
+    files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
-      parserOptions: { project: "./tsconfig.json" },
+      parserOptions: { project: './tsconfig.json' },
     },
-
-    // Enable the TS plugin
-    plugins: { "@typescript-eslint": tsPlugin },
-
-    // Use the recommended rule set
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin,
+    },
     rules: {
+      // all of the TS-recommended rules
       ...tsPlugin.configs.recommended.rules,
+      // turn on the Prettier rule so formatting issues show up as lint errors
+      'prettier/prettier': 'error',
     },
   },
+  // last in the array so it can turn off any formatting rules that conflict
+  eslintConfigPrettier,
 ]);
