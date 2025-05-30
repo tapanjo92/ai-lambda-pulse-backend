@@ -36,7 +36,7 @@ export class AppStack extends Stack {
       runtime: Runtime.NODEJS_20_X, // :contentReference[oaicite:1]{index=1}
       entry: entryFile,
       handler: 'handler',
-      projectRoot: serviceRoot, // :contentReference[oaicite:2]{index=2}
+      projectRoot: projectRoot, // :contentReference[oaicite:2]{index=2}
     });
     transformLambda.grantInvoke(firehoseRole);
 
