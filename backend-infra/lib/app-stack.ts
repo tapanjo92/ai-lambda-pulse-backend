@@ -38,11 +38,11 @@ export class AppStack extends Stack {
       handler: 'handler',
       projectRoot: projectRoot,
       bundling: {
-    // Forces esbuild to include this package in the bundle
-    nodeModules: ['@aws-lambda-powertools/logger'],
-    // OR, if you want to treat it as external at runtime:
-    // externalModules: ['@aws-lambda-powertools/logger'],
-  }, // :contentReference[oaicite:2]{index=2}
+        // Forces esbuild to include this package in the bundle
+        nodeModules: ['@aws-lambda-powertools/logger'],
+        // OR, if you want to treat it as external at runtime:
+        // externalModules: ['@aws-lambda-powertools/logger'],
+      }, // :contentReference[oaicite:2]{index=2}
     });
     transformLambda.grantInvoke(firehoseRole);
 
