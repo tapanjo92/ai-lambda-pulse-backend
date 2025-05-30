@@ -30,7 +30,7 @@ test('handler should process records correctly, converting data to uppercase', a
   expect(result.records.length).toBe(2); // Should match the number of input records
 
   // Check the first record's transformation
-  const firstRecord = result.records.find(r => r.recordId === 'record1');
+  const firstRecord = result.records.find((r) => r.recordId === 'record1');
   expect(firstRecord).toBeDefined(); // Ensure the record is found
   if (firstRecord) {
     expect(firstRecord.result).toBe('Ok'); // As per your handler logic
@@ -39,7 +39,7 @@ test('handler should process records correctly, converting data to uppercase', a
   }
 
   // Check the second record's transformation
-  const secondRecord = result.records.find(r => r.recordId === 'record2');
+  const secondRecord = result.records.find((r) => r.recordId === 'record2');
   expect(secondRecord).toBeDefined(); // Ensure the record is found
   if (secondRecord) {
     expect(secondRecord.result).toBe('Ok'); // As per your handler logic
