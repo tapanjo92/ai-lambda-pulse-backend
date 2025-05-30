@@ -1,7 +1,4 @@
-import {
-  FirehoseTransformationEvent,
-  FirehoseTransformationResultRecord,
-} from 'aws-lambda';
+import { FirehoseTransformationEvent, FirehoseTransformationResultRecord } from 'aws-lambda';
 
 test('handler should process records correctly, converting data to uppercase', async () => {
   // 1. Create a sample input that looks like what Firehose would send
