@@ -9,9 +9,11 @@ import {
 const logger = new Logger({ serviceName: 'FirehoseTransformer' });
 
 export const handler = async (
-  event: FirehoseTransformationEvent,
+  event: FirehoseTransformationEvent
 ): Promise<FirehoseTransformationResult> => {
-  logger.info(`Processing ${event.records.length} records from region ${event.region}. Invocation ID: ${event.invocationId}`);
+  logger.info(
+    `Processing ${event.records.length} records from region ${event.region}. Invocation ID: ${event.invocationId}`
+  );
 
   const output: FirehoseTransformationResultRecord[] = event.records.map(
     (record: FirehoseTransformationEventRecord): FirehoseTransformationResultRecord => {
@@ -24,7 +26,7 @@ export const handler = async (
         result: 'Ok',
         data: Buffer.from(payload.toUpperCase(), 'utf-8').toString('base64'),
       };
-    },
+    }
   );
   return { records: output };
 };
