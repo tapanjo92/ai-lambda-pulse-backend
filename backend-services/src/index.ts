@@ -1,44 +1,37 @@
-import { FirehoseTransformationEvent, FirehoseTransformationResultRecord } from 'aws-lambda';
+import { Logger } from '@aws-lambda-powertools/logger';
+import {
+  FirehoseTransformationEvent,
+  FirehoseTransformationEventRecord, // Make sure this is also imported if you are using it explicitly for 'record' type
+  FirehoseTransformationResult, // Make sure this is also imported for the handler's return Promise
+  FirehoseTransformationResultRecord, // This is the type in question
+} from 'aws-lambda';
 
-test('handler should process records correctly, converting data to uppercase', async () => {
-  // 1. Create a sample input that looks like what Firehose would send
-  const sampleEvent: FirehoseTransformationEvent = {
-    invocationId: 'invId123', // Just an example ID for the function call
-    deliveryStreamArn: 'arn:aws:kinesis:region:account-id:deliverystream/stream-name', // Example ARN
-    region: 'us-east-1', // Example region
-    records: [
-      {
-        recordId: 'record1', // ID for the first piece of data
-        approximateArrivalTimestamp: Date.now(),
-        data: Buffer.from('hello world').toString('base64'), // "hello world" encoded
-      },
-      {
-        recordId: 'record2', // ID for the second piece of data
-        approximateArrivalTimestamp: Date.now(),
-        data: Buffer.from('test data').toString('base64'), // "test data" encoded
-      },
-    ],
-  };
+const logger = new Logger({ serviceName: 'FirehoseTransformer' });
 
-  // 2. Call the handler with our sample event
-  const result = await handler(sampleEvent);
+export const handler = async (
+  event: FirehoseTransformationEvent
+): Promise<FirehoseTransformationResult> => {
+  // FirehoseTransformationResult is used here
+  logger.info(
+    `Processing ${event.records.length} records from region ${event.region}. Invocation ID: ${event.invocationId}`
+  );
 
-  // 3. Check if the output is what we expect
+  // FirehoseTransformationResultRecord is used here as the type for the 'output' array
+  const output: FirehoseTransformationResultRecord[] = event.records.map(
+    // FirehoseTransformationEventRecord is used here as the type for 'record'
+    // FirehoseTransformationResultRecord is used here as the return type of the map function
+    (record: FirehoseTransformationEventRecord): FirehoseTransformationResultRecord => {
+      const payload = Buffer.from(record.data, 'base64').toString('utf-8');
 
-  // It should have the same number of records as the input
-  expect(result.records.length).toBe(2);
+      // The object returned here matches the structure of FirehoseTransformationResultRecord
+      return {
+        recordId: record.recordId,
+        result: 'Ok',
+        data: Buffer.from(payload.toUpperCase(), 'utf-8').toString('base64'),
+      };
+    }
+  );
 
-  // Check the first record
-  const record1Result = result.records.find((r) => r.recordId === 'record1');
-  expect(record1Result).toBeDefined(); // Make sure we found it
-  expect(record1Result?.result).toBe('Ok'); // The handler should mark it as 'Ok'
-  // The data should be "HELLO WORLD" (uppercase of "hello world"), then base64 encoded
-  expect(record1Result?.data).toBe(Buffer.from('HELLO WORLD').toString('base64'));
-
-  // Check the second record
-  const record2Result = result.records.find((r) => r.recordId === 'record2');
-  expect(record2Result).toBeDefined();
-  expect(record2Result?.result).toBe('Ok');
-  // The data should be "TEST DATA" (uppercase of "test data"), then base64 encoded
-  expect(record2Result?.data).toBe(Buffer.from('TEST DATA').toString('base64'));
-});
+  // The 'records' property of the return object expects an array of FirehoseTransformationResultRecord
+  return { records: output };
+};
