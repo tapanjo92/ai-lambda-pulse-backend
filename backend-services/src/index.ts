@@ -30,14 +30,14 @@ test('handler should process records correctly, converting data to uppercase', a
   expect(result.records.length).toBe(2);
 
   // Check the first record
-  const record1Result = result.records.find(r => r.recordId === 'record1');
+  const record1Result = result.records.find((r) => r.recordId === 'record1');
   expect(record1Result).toBeDefined(); // Make sure we found it
   expect(record1Result?.result).toBe('Ok'); // The handler should mark it as 'Ok'
   // The data should be "HELLO WORLD" (uppercase of "hello world"), then base64 encoded
   expect(record1Result?.data).toBe(Buffer.from('HELLO WORLD').toString('base64'));
 
   // Check the second record
-  const record2Result = result.records.find(r => r.recordId === 'record2');
+  const record2Result = result.records.find((r) => r.recordId === 'record2');
   expect(record2Result).toBeDefined();
   expect(record2Result?.result).toBe('Ok');
   // The data should be "TEST DATA" (uppercase of "test data"), then base64 encoded
